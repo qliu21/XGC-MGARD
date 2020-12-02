@@ -36,25 +36,22 @@ int main(int argc, char **argv) {
   std::cout << shape[0] << " " << shape[1] << " "
             << shape[2] << " " << shape[3] << "\n";
 
-  std::size_t u_global_size;
-
-  u_global_size = 1*1*shape[2]*shape[3];
-
   var_i_f_in.SetSelection(adios2::Box<adios2::Dims>(
-                        {0, 0, 0, 0}, {1,  1, shape[2], shape[3]}));
+                        {0, 0, 0, 0}, {shape[0],  shape[1], shape[2], shape[3]}));
 
   std::vector<double> i_f;
   reader.Get<double>(var_i_f_in, i_f);
 
   reader.Close();
 
-  const std::array<std::size_t, 1> dims = {u_global_size};
+//  const std::array<std::size_t, 1> dims = {u_global_size};
+  const std::array<std::size_t, 4> dims = {shape[0], shape[1], shape[2], shape[3]};
 
-  const mgard::TensorMeshHierarchy<1, double> hierarchy(dims);
+  const mgard::TensorMeshHierarchy<4, double> hierarchy(dims);
   const size_t ndof = hierarchy.ndof();
   std::cout << "ndof = " << ndof << "\n";
   tol = 1e10;
-  const mgard::CompressedDataset<1, double> compressed =
+  const mgard::CompressedDataset<4, double> compressed =
           mgard::compress(hierarchy, i_f.data(), 0.0, tol);
 
 }
